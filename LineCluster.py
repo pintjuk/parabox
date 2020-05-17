@@ -4,8 +4,8 @@ from Geometry import *
 from sklearn.decomposition import PCA
 
 
-class cluster:
-    def __init__(self: cluster, first: line, ANGLE_THRECH=4, LINEWIDTH_TRECH=20):
+class Cluster:
+    def __init__(self: Cluster, first: line, ANGLE_THRECH=4, LINEWIDTH_TRECH=20):
         self.THRESH = 7
         self.lines = [first]
         self.ANGLE_THRECH = ANGLE_THRECH
@@ -36,16 +36,20 @@ class cluster:
         return False
 
 
+def toLines(l):
+    return map(lambda x: x.mainLine(), l)
+
+
 def lineClusters(lines, ANGLE_THRECH=4, LINEWIDTH_TRECH=20):
-    clust: List[cluster] = []
+    cluster: List[Cluster] = []
     if lines is not None:
         for i in range(0, len(lines)):
             l = lines[i][0]
-            ltr = line([l[0], l[1]], [l[2], l[3]])
-            for c in clust:
+            ltr = line((l[0], l[1]), (l[2], l[3]))
+            for c in cluster:
                 if c.tryadd(ltr):
                     break
             else:
-                clust.append(cluster(ltr, ANGLE_THRECH, LINEWIDTH_TRECH))
-    print("num clust: ", len(clust))
-    return clust
+                cluster.append(Cluster(ltr, ANGLE_THRECH, LINEWIDTH_TRECH))
+    print("Num clust: ", len(cluster))
+    return cluster

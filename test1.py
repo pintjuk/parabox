@@ -7,16 +7,17 @@ from Edges import *
 from LineCluster import *
 from Graph import *
 
-NODE_TRESH = 20
+NODE_TRESH = 50
 
-# img0 = cv2.imread('a-box.jpg',cv2.IMREAD_GRAYSCALE)
-input_img = cv2.imread('a-box-2.jpg', cv2.IMREAD_GRAYSCALE)
+input_img = cv2.imread('a-box.jpg',cv2.IMREAD_GRAYSCALE)
+#input_img = cv2.imread('twolines.png',cv2.IMREAD_GRAYSCALE)
+#input_img = cv2.imread('a-box-2.jpg', cv2.IMREAD_GRAYSCALE)
 # img0 = cv2.imread('p-line-1.png',cv2.IMREAD_GRAYSCALE)
 
 edges = Edges(input_img)
 lines = cv2.HoughLinesP(edges, 1, np.pi / 180, 50, None, 50, 10)
-clust = lineClusters(lines, 5, 20)
-graphs = ConstructGrahps(clust, NODE_TRESH)
+meanlines = toLines(lineClusters(lines, 5, 20))
+graphs = construct_graphs(meanlines, NODE_TRESH)
 
 ### Subgraph Match
 
@@ -41,7 +42,7 @@ colors = ['r', 'g', 'c']
 for i, c in enumerate(clust):
     c.mainLine()
     for l in c.lines:
-        plt.plot(l.tr[0], l.tr[1], '.', color=colors[i % 3])
+        plt.plot(l.lineParameters[0], l.lineParameters[1], '.', color=colors[i % 3])
 
 plt.figure(3)
 
@@ -50,8 +51,12 @@ plt.imshow(edges, interpolation='bicubic')
 colors = ['r', 'g', 'c']
 for i, c in enumerate(clust):
     x = c.mainLine()
-    plt.plot([x[0][0], x[1][0]], [x[0][1], x[1][1]], colors[i % 3], linewidth=2)
+    plt.plot([x.a[0], x.b[0]], [x.a[1], x.b[1]], colors[i % 3], linewidth=2)
 
+plt.figure("Graphs")
+plt.imshow(edges, interpolation='bicubic')
+for i,g in enumerate(graphs):
+    g.plot(plt, colors[i%3])
 plt.show()
 
 dst = cv2.cvtColor(input_img, cv2.COLOR_GRAY2BGR)

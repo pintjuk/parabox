@@ -15,18 +15,34 @@ class graph:
         for edge in self.grath.edges:
             plt.plot(
                 [edge[0][0], edge[1][0]],
-                [edge[0][1], edge[0][1]],
+                [edge[0][1], edge[1][1]],
                 color,
                 linewidth=2)
+
+    def completeEdges(self):
+        for line in self.lines:
+            if len(line[1]) == 0:
+                line[1].append(line[0].a)
+                line[1].append(line[0].b)
+                self.grath.add_edge(line[1][0], line[1][1])
+            if len(line[1]) == 1:
+                i = None
+                if distance(line[0].a, line[1][0]) < distance(line[0].b, line[1][0]):
+                    line[1].append(line[0].b)
+                else:
+                    line[1].append(line[0].b)
+                self.grath.add_edge(line[1][0], line[1][1])
 
     def tryAdd(self, line: line):
         n1 = None
         n2 = None
         for gline in self.lines:
+            print("line:", gline)
+
             def nodeCheck(line_end):
-                if self.nodesAreClose(gline[0], line.a):
+                if self.nodesAreClose(gline[0], line_end):
                     for node in gline[1]:
-                        if distance(line.a, node) < self.NODE_TRECH:
+                        if distance(line_end, node) < self.NODE_TRECH:
                             return node
                     else:
                         i = gline[0].intersection(line)
@@ -44,18 +60,19 @@ class graph:
             return False
         if n1 != None and n2 != None:
             self.grath.add_edge(n1, n2)
-        self.lines.append((line, list(filter(lambda x: x != None, [n1, n2]))))
+        if n1 != None or n2 != None:
+            self.lines.append((line, list(filter(lambda x: x != None, [n1, n2]))))
         return True
 
 
-def ConstructGrahps(clust, node_threch=20):
+def construct_graphs(lines, node_threch=20):
     graphs = []
-    for c in clust:
-        l = c.mainLine()
+    for l in lines:
         for g in graphs:
             if g.tryAdd(l):
                 break
         else:
             graphs.append(graph(l, node_threch))
-    # Clean up graphs
+    for g in graphs:
+        g.completeEdges()
     return graphs

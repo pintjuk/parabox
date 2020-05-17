@@ -2,11 +2,13 @@ from __future__ import annotations
 import math
 
 
-def thetarho(a, b):
+def pointsToLineParameters(a, b):
     x1 = a[0]
     y1 = a[1]
     x2 = b[0]
     y2 = b[1]
+    if x1-x2 == 0: # avoid devision by zero
+        return [90, x1]
     m = (y1 - y2) / (x1 - x2)
     theta = math.atan(m)
     theta = 180 * theta / math.pi
@@ -15,10 +17,14 @@ def thetarho(a, b):
 
 
 class line:
+    @classmethod
+    def fromTouple(self: line, l):
+        return line(l[0], l[1])
+
     def __init__(self: line, a, b):
-        self.a = a
-        self.b = b
-        self.tr = thetarho(a, b)
+        self.a = (a[0], a[1])
+        self.b = (b[0], b[1])
+        self.lineParameters = pointsToLineParameters(a, b)
         x1 = a[0]
         y1 = a[1]
         x2 = b[0]
@@ -32,15 +38,15 @@ class line:
         return (x, y)
 
     def trdistance(a: line, b: line):
-        dx = a.tr[0] - b.tr[0]
-        dy = a.tr[1] - b.tr[1]
+        dx = a.lineParameters[0] - b.lineParameters[0]
+        dy = a.lineParameters[1] - b.lineParameters[1]
         return math.sqrt(dx * dx + dy * dy)
 
     def rhodistance(a: line, b: line):
-        return abs(a.tr[1] - b.tr[1])
+        return abs(a.lineParameters[1] - b.lineParameters[1])
 
     def thetaDistance(a: line, b: line):
-        dr = abs(a.tr[0] - b.tr[0])
+        dr = abs(a.lineParameters[0] - b.lineParameters[0])
         if dr > 90:
             return 180 - dr
         return dr
