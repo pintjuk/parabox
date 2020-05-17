@@ -3,96 +3,66 @@ from typing import List
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-import math
+from Edges import *
+from LineCluster import *
+from Graph import *
 
-def thetarho(a, b):
-    x1 = a[0]
-    y1 = a[1]
-    x2 = b[0]
-    y2 = b[1]
-    m= (y1-y2) / (x1-x2)
-    theta= math.atan(m)
-    theta= 180*theta/math.pi
-    rho=abs(y1-(m*x1))/math.sqrt(m*m + 1)
-    return [theta, rho]
+NODE_TRESH=20
 
+# img0 = cv2.imread('a-box.jpg',cv2.IMREAD_GRAYSCALE)
+input_img = cv2.imread('a-box-2.jpg', cv2.IMREAD_GRAYSCALE)
+# img0 = cv2.imread('p-line-1.png',cv2.IMREAD_GRAYSCALE)
 
-
-class line:
-    def __init__(self:line, a,b):
-        self.a = a
-        self.b = b
-        self.tr = thetarho(a, b)
-
-    def trdistance(a:line,b:line):
-        dx= a.tr[0]-b.tr[0]
-        dy= a.tr[1]-b.tr[1]
-        return math.sqrt(dx*dx + dy*dy)
-
-class cluster:
-
-    def __init__(self:cluster, first:line):
-        self.THRESH = 5
-        self.lines=[first]
-
-    def tryadd(self, line:line):
-        for cline in self.lines:
-            if cline.trdistance(line) < self.THRESH:
-                self.lines.append(line)
-                return True
-        return False
-
-
-img0 = cv2.imread('a-box.jpg',cv2.IMREAD_GRAYSCALE)
-img = cv2.medianBlur(img0,5)
-#ret,th1 = cv2.threshold(img,127,255,cv2.THRESH_BINARY)
-#th2 = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,11,2)
-th3 = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,2)
-
-edges = cv2.Canny(th3, 50, 200, None, 3)
- 
-dst = cv2.cvtColor(img0, cv2.COLOR_GRAY2BGR)
-    
+edges = Edges(input_img)
 lines = cv2.HoughLinesP(edges, 1, np.pi / 180, 50, None, 50, 10)
+clust = lineClusters(lines, 5, 20)
+graphs = ConstructGrahps(clust, NODE_TRESH)
 
+### Subgraph Match
 
-if lines is not None:
-    for i in range(0, len(lines)):
-        l = lines[i][0]
-        cv2.line(dst, (l[0], l[1]), (l[2], l[3]), (0,0,255), 1, cv2.LINE_AA)
+### Extend line into infinity
 
-
-clust:List[cluster] = []
-
-if lines is not None:
-    for i in range(0, len(lines)):
-        l = lines[i][0]
-        ltr = line([l[0],l[1]],[l[2],l[3]])
-        for c in clust:
-            if c.tryadd(ltr):
-                break
-        else:
-            clust.append(cluster(ltr))
-
-print("num clust: ",len(clust))
+### Find vanishing points as intersections perspective lines
+### draw horizon intersecting the vanashing points 
+### draw y axis
+#### find top and buttom planes
+#### find intersection of lines from corners
+#### draw y-axis internescting both centers
 plt.figure(2)
 
-plt.imshow(edges,interpolation='bicubic')
+plt.imshow(edges, interpolation='bicubic')
 colors = ['r', 'g', 'c']
-for i,c in enumerate(clust):
+for i, c in enumerate(clust):
     for l in c.lines:
-        plt.plot([l.a[0], l.b[0]], [l.a[1], l.b[1]], colors[i%3], linewidth=2)
+        plt.plot([l.a[0], l.b[0]], [l.a[1], l.b[1]], colors[i % 3], linewidth=2)
 
 plt.figure(1)
 colors = ['r', 'g', 'c']
 for i, c in enumerate(clust):
+    c.mainLine()
     for l in c.lines:
-        plt.plot(l.tr[0], l.tr[1], 'o', color=colors[i%3])
+        plt.plot(l.tr[0], l.tr[1], '.', color=colors[i % 3])
+
+plt.figure(3)
+
+plt.imshow(edges, interpolation='bicubic')
+
+colors = ['r', 'g', 'c']
+for i, c in enumerate(clust):
+    x = c.mainLine()
+    plt.plot([x[0][0], x[1][0]], [x[0][1], x[1][1]], colors[i % 3], linewidth=2)
+
 plt.show()
-#cv2.imshow('box',img)
-cv2.imshow('edges',edges)
-cv2.imshow('thresh3',th3)
-cv2.imshow('lines',dst)
+
+dst = cv2.cvtColor(input_img, cv2.COLOR_GRAY2BGR)
+if lines is not None:
+    for i in range(0, len(lines)):
+        l = lines[i][0]
+        cv2.line(dst, (l[0], l[1]), (l[2], l[3]), (0, 0, 255), 1, cv2.LINE_AA)
+
+# cv2.imshow('box',img)
+cv2.imshow('edges', edges)
+cv2.imshow('lines', dst)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
