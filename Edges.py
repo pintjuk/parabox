@@ -1,5 +1,6 @@
 import cv2
 
+
 def Edges(img):
     simg = cv2.medianBlur(img, 5)
     # ret,th1 = cv2.threshold(img,127,255,cv2.THRESH_BINARY)

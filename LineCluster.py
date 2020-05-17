@@ -23,7 +23,7 @@ class cluster:
         pca = PCA(n_components=1)
         pca.fit(x)
         xt = pca.transform(x)
-        ml=pca.inverse_transform([max(xt), min(xt)])
+        ml = pca.inverse_transform([max(xt), min(xt)])
         return line(ml[0], ml[1])
 
     def tryadd(self, line: line):

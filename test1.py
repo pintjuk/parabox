@@ -7,7 +7,7 @@ from Edges import *
 from LineCluster import *
 from Graph import *
 
-NODE_TRESH=20
+NODE_TRESH = 20
 
 # img0 = cv2.imread('a-box.jpg',cv2.IMREAD_GRAYSCALE)
 input_img = cv2.imread('a-box-2.jpg', cv2.IMREAD_GRAYSCALE)

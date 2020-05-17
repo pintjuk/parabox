@@ -1,6 +1,7 @@
 import networkx as nx
 from Geometry import *
 
+
 class graph:
     def __init__(self, firstLine: line, NODE_TRECH=20):
         self.lines = [(firstLine, [])]
@@ -45,6 +46,7 @@ class graph:
             self.grath.add_edge(n1, n2)
         self.lines.append((line, list(filter(lambda x: x != None, [n1, n2]))))
         return True
+
 
 def ConstructGrahps(clust, node_threch=20):
     graphs = []
