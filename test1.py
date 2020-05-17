@@ -16,7 +16,7 @@ input_img = cv2.imread('a-box.jpg',cv2.IMREAD_GRAYSCALE)
 
 edges = Edges(input_img)
 lines = cv2.HoughLinesP(edges, 1, np.pi / 180, 50, None, 50, 10)
-meanlines = toLines(lineClusters(lines, 5, 20))
+meanlines = toLines(line_clusters(lines, 5, 20))
 graphs = construct_graphs(meanlines, NODE_TRESH)
 
 ### Subgraph Match

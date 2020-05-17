@@ -7,7 +7,7 @@ def pointsToLineParameters(a, b):
     y1 = a[1]
     x2 = b[0]
     y2 = b[1]
-    if x1-x2 == 0: # avoid devision by zero
+    if x1 - x2 == 0:  # avoid devision by zero
         return [90, x1]
     m = (y1 - y2) / (x1 - x2)
     theta = math.atan(m)
@@ -29,12 +29,26 @@ class line:
         y1 = a[1]
         x2 = b[0]
         y2 = b[1]
-        self.m = (y1 - y2) / (x1 - x2)
-        self.k = y1 - (x1 * self.m)
+        if x1 - x1 == 0:
+            self.m = None
+        else:
+            self.m = (y1 - y2) / (x1 - x2)
+            self.k = y1 - (x1 * self.m)
 
     def intersection(a: line, b: line):
-        x = (b.k - a.k) / (a.m - b.m)
-        y = x * b.m + b.k
+        x1 = a.a[0]
+        y1 = a.a[1]
+        x2 = a.b[0]
+        y2 = a.b[1]
+        x3 = b.a[0]
+        y3 = b.a[1]
+        x4 = b.b[0]
+        y4 = b.b[1]
+        denuminator = ((x1-x2)*(y3-y4)-(y1-y2)*(x3-x4))
+        if denuminator==0:
+            return None
+        x = ((x1*y2 - y1*x2)*(x3 - x4) - (x1 - x2)*(x3*y4-y3*x4)) / denuminator
+        y = ((x1*y2 - y1*x2)*(y3 - y4) - (y1 - y2)*(x3*y4-y3*x4)) / denuminator
         return (x, y)
 
     def trdistance(a: line, b: line):

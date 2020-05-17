@@ -40,7 +40,7 @@ def toLines(l):
     return map(lambda x: x.mainLine(), l)
 
 
-def lineClusters(lines, ANGLE_THRECH=4, LINEWIDTH_TRECH=20):
+def line_clusters(lines, ANGLE_THRECH=4, LINEWIDTH_TRECH=20):
     cluster: List[Cluster] = []
     if lines is not None:
         for i in range(0, len(lines)):

@@ -139,3 +139,54 @@ class TestConstructSquar(TestCase):
 
     def test_should_be_isomorphic_to_a_triangle(self):
         self.assertTrue(nx.is_isomorphic(self.graphs[0].grath, nx.Graph([(1, 2), (2, 3), (3, 4), (4,1)])))
+
+
+class TestConstructChair(TestCase):
+    def setUp(self) -> None:
+        # Arange
+        l = [((5, 3), (1, 100)),
+             ((1, 100), (100, 100)),
+             ((100, 100), (100, 1)),
+             ((100, 1), (-1, -1)),
+             ((100, -1), (201, 1)),
+             ((200, 0), (203, 100)),
+             ((200, 100), (100, 100)),
+             ]
+        # Act
+        self.graphs = construct_graphs(map(lambda x: line.fromTouple(x), l))
+
+    def test_should_be_one_graph(self):
+        self.assertEqual(1, len(self.graphs))
+
+    def test_should_have_7_line(self):
+        self.assertEqual(7, len(self.graphs[0].lines))
+
+    def test_should_be_isomorphic_to_a_triangle(self):
+        self.assertTrue(nx.is_isomorphic(self.graphs[0].grath, nx.Graph([(1, 2), (2, 3), (3, 4), (4,1),(2,5), (5,6),(6,3)])))
+
+
+
+class TestConstructNontransparantCube(TestCase):
+    def setUp(self) -> None:
+        # Arange
+        l = [((0, 0), (1, 110)),
+             ((1, 100), (100, 100)),
+             ((100, 100), (100, 1)),
+             ((100, 1), (1, 1)),
+             ((100, 1), (200, 1)),
+             ((200, 1), (200, 100)),
+             ((200, 100), (100, 100)),
+             ((1, 100), (100, 200)),
+             ((200, 100), (100, 200)),
+             ]
+        # Act
+        self.graphs = construct_graphs(map(lambda x: line.fromTouple(x), l))
+
+    def test_should_be_one_graph(self):
+        self.assertEqual(1, len(self.graphs))
+
+    def test_should_have_9_line(self):
+        self.assertEqual(9, len(self.graphs[0].lines))
+
+    def test_should_be_isomorphic_to_a_triangle(self):
+        self.assertTrue(nx.is_isomorphic(self.graphs[0].grath, nx.Graph([(1, 2), (2, 3), (3, 4), (4,1),(2,5), (5,6),(6,3), (6,7), (7,4)])))
