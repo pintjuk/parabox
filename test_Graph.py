@@ -101,6 +101,7 @@ class TestConstructFourConnectedLine(TestCase):
     def test_should_be_isomorphic_to_a_star(self):
         self.assertTrue(nx.is_isomorphic(self.graphs[0].grath, nx.Graph([(1, 2), (1, 3), (1, 4), (1, 5)])))
 
+
 class TestConstructTriangle(TestCase):
     def setUp(self) -> None:
         # Arange
@@ -120,6 +121,7 @@ class TestConstructTriangle(TestCase):
     def test_should_be_isomorphic_to_a_triangle(self):
         self.assertTrue(nx.is_isomorphic(self.graphs[0].grath, nx.Graph([(1, 2), (1, 3), (2, 3)])))
 
+
 class TestConstructSquar(TestCase):
     def setUp(self) -> None:
         # Arange
@@ -138,7 +140,7 @@ class TestConstructSquar(TestCase):
         self.assertEqual(4, len(self.graphs[0].lines))
 
     def test_should_be_isomorphic_to_a_triangle(self):
-        self.assertTrue(nx.is_isomorphic(self.graphs[0].grath, nx.Graph([(1, 2), (2, 3), (3, 4), (4,1)])))
+        self.assertTrue(nx.is_isomorphic(self.graphs[0].grath, nx.Graph([(1, 2), (2, 3), (3, 4), (4, 1)])))
 
 
 class TestConstructChair(TestCase):
@@ -162,8 +164,8 @@ class TestConstructChair(TestCase):
         self.assertEqual(7, len(self.graphs[0].lines))
 
     def test_should_be_isomorphic_to_a_triangle(self):
-        self.assertTrue(nx.is_isomorphic(self.graphs[0].grath, nx.Graph([(1, 2), (2, 3), (3, 4), (4,1),(2,5), (5,6),(6,3)])))
-
+        self.assertTrue(
+            nx.is_isomorphic(self.graphs[0].grath, nx.Graph([(1, 2), (2, 3), (3, 4), (4, 1), (2, 5), (5, 6), (6, 3)])))
 
 
 class TestConstructNontransparantCube(TestCase):
@@ -189,4 +191,35 @@ class TestConstructNontransparantCube(TestCase):
         self.assertEqual(9, len(self.graphs[0].lines))
 
     def test_should_be_isomorphic_to_a_triangle(self):
-        self.assertTrue(nx.is_isomorphic(self.graphs[0].grath, nx.Graph([(1, 2), (2, 3), (3, 4), (4,1),(2,5), (5,6),(6,3), (6,7), (7,4)])))
+        self.assertTrue(nx.is_isomorphic(self.graphs[0].grath, nx.Graph(
+            [(1, 2), (2, 3), (3, 4), (4, 1), (2, 5), (5, 6), (6, 3), (6, 7), (7, 4)])))
+
+
+class TestConstructNontransparantCube(TestCase):
+    def setUp(self) -> None:
+        # Arange
+        l = [((0, 0), (1, 110)),
+             ((1, 100), (100, 100)),
+             ((100, 100), (100, 1)),
+             ((100, 1), (1, 1)),
+             ((100, 1), (200, 1)),
+             ((200, 1), (200, 100)),
+             ((200, 100), (100, 100)),
+             ((1, 100), (100, 200)),
+             ((200, 100), (100, 200)),
+             ((1, 1), (100, -200)),
+             ((200, 1), (100, -200)),
+             ((100, -200), (100, 200))
+             ]
+        # Act
+        self.graphs = construct_graphs(map(lambda x: line.fromTouple(x), l))
+
+    def test_should_be_one_graph(self):
+        self.assertEqual(1, len(self.graphs))
+
+    def test_should_have_12_line(self):
+        self.assertEqual(12, len(self.graphs[0].lines))
+
+    def test_should_be_isomorphic_to_a_triangle(self):
+        self.assertTrue(nx.is_isomorphic(self.graphs[0].grath, nx.Graph(
+            [(1, 2), (2, 3), (3, 4), (4, 1), (2, 5), (5, 6), (6, 3), (6, 7), (7, 4), (1, 8), (8, 5), (8, 7)])))

@@ -1,5 +1,9 @@
 from __future__ import annotations
+
 import math
+
+import numpy as np
+from sklearn.decomposition import PCA
 
 
 def pointsToLineParameters(a, b):
@@ -44,11 +48,11 @@ class line:
         y3 = b.a[1]
         x4 = b.b[0]
         y4 = b.b[1]
-        denuminator = ((x1-x2)*(y3-y4)-(y1-y2)*(x3-x4))
-        if denuminator==0:
+        denuminator = ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4))
+        if denuminator == 0:
             return None
-        x = ((x1*y2 - y1*x2)*(x3 - x4) - (x1 - x2)*(x3*y4-y3*x4)) / denuminator
-        y = ((x1*y2 - y1*x2)*(y3 - y4) - (y1 - y2)*(x3*y4-y3*x4)) / denuminator
+        x = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / denuminator
+        y = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / denuminator
         return (x, y)
 
     def trdistance(a: line, b: line):
@@ -64,6 +68,38 @@ class line:
         if dr > 90:
             return 180 - dr
         return dr
+
+    def kindaOverlaps(self, line: line, WIDTHS_TRECH, GAP_THRECH, THETA_THRECH=3):
+        # Create PCA trasform
+        if self.thetaDistance(line) > THETA_THRECH:
+            return False
+        pca = PCA(n_components=2)
+        x = []
+        x.append(self.a)
+        x.append(self.b)
+        x.append(line.a)
+        x.append(line.b)
+        pca.fit(x)
+
+        # Transform lines into PCA space
+        a = pca.transform([self.a, self.b])
+        b = pca.transform([line.a, line.b])
+
+        # Check Width of the cluster against width threshold
+        pointsInComp2 = [a[0][1], a[1][1], b[0][1], b[1][1], b[0][1], b[1][1], b[0][1], b[1][1]]
+        Comp2Width = max([abs(i - ii) for i in pointsInComp2 for ii in pointsInComp2])
+        if Comp2Width > WIDTHS_TRECH:
+            return False
+
+        # Ceck if they overlap
+        if np.sign(a[0][0] - b[0][0]) != np.sign(a[0][0] - b[1][0]):
+            return True
+        if np.sign(a[1][0] - b[0][0]) != np.sign(a[1][0] - b[1][0]):
+            return True
+
+        # Otherwise check if the gap between them is less then the gap threshold
+        gap = min([abs(i - b[0][0]) for i in [a[0][0], a[1][0]] for ii in [b[0][0], b[1][0]]])
+        return gap < GAP_THRECH
 
 
 def distance(a, b):
