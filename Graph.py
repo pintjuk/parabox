@@ -38,6 +38,9 @@ class graph:
         #         color,
         #         linewidth=2)
 
+    def tryToFixOneDisconectionTransparantGraph(self):
+        for e in self.grath.degree():
+
     def completeEdges(self):
         for line in self.lines:
             if len(line[1]) == 0:
@@ -64,7 +67,7 @@ class graph:
                             return node
                     else:
                         i = gline[0].intersection(line)
-                        if i == None:  # Lines are parallel, and thus there is no intersection
+                        if i is None:  # Lines are parallel, and thus there is no intersection
                             # TODO: Probably something special needs to be done when lines are parallel, Maybe merged?
                             i = line_end
                         self.grath.add_node(i)
@@ -73,16 +76,16 @@ class graph:
                         gline[1].append(i)
                         return i
 
-            if n1 == None:
+            if n1 is None:
                 n1 = nodeCheck(line.a)
-            if n2 == None:
+            if n2 is None:
                 n2 = nodeCheck(line.b)
-        if n1 == None and n2 == None:
+        if n1 is None and n2 is None:
             return False
-        if n1 != None and n2 != None:
+        if n1 is not None and n2 is not None:
             self.grath.add_edge(n1, n2)
-        if n1 != None or n2 != None:
-            self.lines.append((line, list(filter(lambda x: x != None, [n1, n2]))))
+        if n1 is not None or n2 is not None:
+            self.lines.append((line, list(filter(lambda x: x is not None, [n1, n2]))))
         return True
 
     def Shape(self):
@@ -113,5 +116,9 @@ def construct_graphs(lines: List[line], node_threch=20):
         g.completeEdges()
     print("graph: ", len(graphs))
     for g in graphs:
+        print("edges:", g.grath.number_of_edges())
+        print("nodes:", g.grath.number_of_nodes())
+        print("degree:", g.grath.degree())
+
         print("shape: ", g.Shape())
     return graphs
